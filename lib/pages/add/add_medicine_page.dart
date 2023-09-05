@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:cast/components/cast_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -11,6 +14,7 @@ class AddPage extends StatefulWidget {
 
 class _AddPageState extends State<AddPage> {
   final _nameController = TextEditingController();
+  File? _pikedImage;
 
   @override
   void dispose() {
@@ -44,12 +48,26 @@ class _AddPageState extends State<AddPage> {
                 child: CircleAvatar(
                   radius: 40,
                   child: CupertinoButton(
-                    onPressed: () {},
-                    child: const Icon(
-                      CupertinoIcons.photo_camera_solid,
-                      size: 30,
-                      color: Colors.white,
-                    ),
+                    onPressed: () {
+                      ImagePicker()
+                          .pickImage(source: ImageSource.gallery)
+                          .then((xfile) {
+                        if (xfile == null) return;
+                        setState(() {
+                          _pikedImage = File(xfile.path);
+                        });
+                      });
+                    },
+                    child: _pikedImage == null
+                        ? const Icon(
+                            CupertinoIcons.photo_camera_solid,
+                            size: 30,
+                            color: Colors.white,
+                          )
+                        : CircleAvatar(
+                            foregroundImage: FileImage(_pikedImage!),
+                            radius: 40,
+                          ),
                   ),
                 ),
               ),
