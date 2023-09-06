@@ -28,10 +28,7 @@ class _AddPageState extends State<AddPage> {
       appBar: AppBar(
         leading: const CloseButton(),
       ),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
+      body: SingleChildScrollView(
         child: Padding(
           padding: pagePadding,
           child: Column(
@@ -48,15 +45,49 @@ class _AddPageState extends State<AddPage> {
                 child: CircleAvatar(
                   radius: 40,
                   child: CupertinoButton(
+                    padding: _pikedImage == null ? null : EdgeInsets.zero,
                     onPressed: () {
-                      ImagePicker()
-                          .pickImage(source: ImageSource.gallery)
-                          .then((xfile) {
-                        if (xfile == null) return;
-                        setState(() {
-                          _pikedImage = File(xfile.path);
-                        });
-                      });
+                      showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return SafeArea(
+                              child: Padding(
+                                padding: pagePadding,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        ImagePicker()
+                                            .pickImage(
+                                                source: ImageSource.camera)
+                                            .then((xfile) {
+                                          Navigator.maybePop(context);
+                                        });
+                                      },
+                                      child: const Text('카메라 촬영'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        ImagePicker()
+                                            .pickImage(
+                                                source: ImageSource.gallery)
+                                            .then((xfile) {
+                                          if (xfile != null) {
+                                            setState(() {
+                                              _pikedImage = File(xfile.path);
+                                              Navigator.maybePop(context);
+                                            });
+                                          }
+                                        });
+                                      },
+                                      child: const Text('앨범에서 가져오기'),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          });
                     },
                     child: _pikedImage == null
                         ? const Icon(
