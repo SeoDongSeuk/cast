@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:cast/components/cast_constants.dart';
+import 'package:cast/components/cast_page_route.dart';
+import 'package:cast/pages/add/add_alarm_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +16,7 @@ class AddPage extends StatefulWidget {
 
 class _AddPageState extends State<AddPage> {
   final _nameController = TextEditingController();
+  File? _mdicineImage;
 
   @override
   void dispose() {
@@ -27,42 +30,54 @@ class _AddPageState extends State<AddPage> {
       appBar: AppBar(
         leading: const CloseButton(),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: pagePadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '어떤 약이에요?',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              const SizedBox(
-                height: largeSpace,
-              ),
-              const Center(
-                child: MedicineImageButton(),
-              ),
-              const SizedBox(
-                height: largeSpace + regularSpace,
-              ),
-              Text(
-                '약 이름',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              TextFormField(
-                controller: _nameController,
-                maxLength: 20,
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.done,
-                style: Theme.of(context).textTheme.bodyLarge,
-                decoration: InputDecoration(
-                  hintText: '복용할 약 이름을 기입해주세요',
-                  hintStyle: Theme.of(context).textTheme.bodyMedium,
-                  contentPadding: textFieldContentPadding,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: pagePadding,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '어떤 약이에요?',
+                  style: Theme.of(context).textTheme.headlineLarge,
                 ),
-              ),
-            ],
+                const SizedBox(
+                  height: largeSpace,
+                ),
+                Center(
+                  child: MedicineImageButton(
+                    changeImageFile: (File? value) {
+                      _mdicineImage = value;
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: largeSpace + regularSpace,
+                ),
+                Text(
+                  '약 이름',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                TextFormField(
+                  controller: _nameController,
+                  maxLength: 20,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.done,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  decoration: InputDecoration(
+                    hintText: '복용할 약 이름을 기입해주세요',
+                    hintStyle: Theme.of(context).textTheme.bodyMedium,
+                    contentPadding: textFieldContentPadding,
+                  ),
+                  onChanged: (_) {
+                    setState(() {});
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -72,7 +87,7 @@ class _AddPageState extends State<AddPage> {
           child: SizedBox(
             height: submitButtonHeight,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: _nameController.text.isEmpty ? null : _onAddAlarmPage,
               style: ElevatedButton.styleFrom(
                   textStyle: Theme.of(context).textTheme.titleMedium),
               child: const Text('다음'),
@@ -82,10 +97,27 @@ class _AddPageState extends State<AddPage> {
       ),
     );
   }
+
+  void _onAddAlarmPage() {
+    Navigator.push(
+      context,
+      FadePageRoute(
+        page: AddAlarmPage(
+          medicineImage: _mdicineImage,
+          medicineName: _nameController.text,
+        ),
+      ),
+    );
+  }
 }
 
 class MedicineImageButton extends StatefulWidget {
-  const MedicineImageButton({super.key});
+  const MedicineImageButton({
+    super.key,
+    required this.changeImageFile,
+  });
+
+  final ValueChanged<File?> changeImageFile;
 
   @override
   State<MedicineImageButton> createState() => _MedicineImageButtonState();
@@ -131,9 +163,10 @@ class _MedicineImageButtonState extends State<MedicineImageButton> {
       if (xfile != null) {
         setState(() {
           _pikedImage = File(xfile.path);
-          Navigator.maybePop(context);
+          widget.changeImageFile(_pikedImage);
         });
       }
+      Navigator.maybePop(context);
     });
   }
 }
