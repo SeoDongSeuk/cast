@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cast/pages/add/components/add_page_widget.dart';
 import 'package:flutter/material.dart';
 
 class AddAlarmPage extends StatelessWidget {
@@ -14,10 +15,13 @@ class AddAlarmPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      appBar: AppBar(),
+      body: AddPageBody(
         children: [
-          medicineImage == null ? Container() : Image.file(medicineImage!),
-          Text(medicineName),
+          Text(
+            '매일 복약 잊지 말아요!',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
         ],
       ),
     );

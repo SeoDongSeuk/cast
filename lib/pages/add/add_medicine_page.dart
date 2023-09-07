@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cast/components/cast_constants.dart';
 import 'package:cast/components/cast_page_route.dart';
 import 'package:cast/pages/add/add_alarm_page.dart';
+import 'package:cast/pages/add/components/add_page_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -30,56 +31,45 @@ class _AddPageState extends State<AddPage> {
       appBar: AppBar(
         leading: const CloseButton(),
       ),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: pagePadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '어떤 약이에요?',
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-                const SizedBox(
-                  height: largeSpace,
-                ),
-                Center(
-                  child: MedicineImageButton(
-                    changeImageFile: (File? value) {
-                      _mdicineImage = value;
-                    },
-                  ),
-                ),
-                const SizedBox(
-                  height: largeSpace + regularSpace,
-                ),
-                Text(
-                  '약 이름',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                TextFormField(
-                  controller: _nameController,
-                  maxLength: 20,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.done,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  decoration: InputDecoration(
-                    hintText: '복용할 약 이름을 기입해주세요',
-                    hintStyle: Theme.of(context).textTheme.bodyMedium,
-                    contentPadding: textFieldContentPadding,
-                  ),
-                  onChanged: (_) {
-                    setState(() {});
-                  },
-                ),
-              ],
+      body: AddPageBody(
+        children: [
+          Text(
+            '어떤 약이에요?',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(
+            height: largeSpace,
+          ),
+          Center(
+            child: MedicineImageButton(
+              changeImageFile: (File? value) {
+                _mdicineImage = value;
+              },
             ),
           ),
-        ),
+          const SizedBox(
+            height: largeSpace + regularSpace,
+          ),
+          Text(
+            '약 이름',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          TextFormField(
+            controller: _nameController,
+            maxLength: 20,
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.done,
+            style: Theme.of(context).textTheme.bodyLarge,
+            decoration: InputDecoration(
+              hintText: '복용할 약 이름을 기입해주세요',
+              hintStyle: Theme.of(context).textTheme.bodyMedium,
+              contentPadding: textFieldContentPadding,
+            ),
+            onChanged: (_) {
+              setState(() {});
+            },
+          ),
+        ],
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
