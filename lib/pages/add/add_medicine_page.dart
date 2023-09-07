@@ -14,7 +14,6 @@ class AddPage extends StatefulWidget {
 
 class _AddPageState extends State<AddPage> {
   final _nameController = TextEditingController();
-  File? _pikedImage;
 
   @override
   void dispose() {
@@ -41,66 +40,8 @@ class _AddPageState extends State<AddPage> {
               const SizedBox(
                 height: largeSpace,
               ),
-              Center(
-                child: CircleAvatar(
-                  radius: 40,
-                  child: CupertinoButton(
-                    padding: _pikedImage == null ? null : EdgeInsets.zero,
-                    onPressed: () {
-                      showModalBottomSheet(
-                          context: context,
-                          builder: (context) {
-                            return SafeArea(
-                              child: Padding(
-                                padding: pagePadding,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    TextButton(
-                                      onPressed: () {
-                                        ImagePicker()
-                                            .pickImage(
-                                                source: ImageSource.camera)
-                                            .then((xfile) {
-                                          Navigator.maybePop(context);
-                                        });
-                                      },
-                                      child: const Text('카메라 촬영'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        ImagePicker()
-                                            .pickImage(
-                                                source: ImageSource.gallery)
-                                            .then((xfile) {
-                                          if (xfile != null) {
-                                            setState(() {
-                                              _pikedImage = File(xfile.path);
-                                              Navigator.maybePop(context);
-                                            });
-                                          }
-                                        });
-                                      },
-                                      child: const Text('앨범에서 가져오기'),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          });
-                    },
-                    child: _pikedImage == null
-                        ? const Icon(
-                            CupertinoIcons.photo_camera_solid,
-                            size: 30,
-                            color: Colors.white,
-                          )
-                        : CircleAvatar(
-                            foregroundImage: FileImage(_pikedImage!),
-                            radius: 40,
-                          ),
-                  ),
-                ),
+              const Center(
+                child: MedicineImageButton(),
               ),
               const SizedBox(
                 height: largeSpace + regularSpace,
@@ -137,6 +78,93 @@ class _AddPageState extends State<AddPage> {
               child: const Text('다음'),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class MedicineImageButton extends StatefulWidget {
+  const MedicineImageButton({super.key});
+
+  @override
+  State<MedicineImageButton> createState() => _MedicineImageButtonState();
+}
+
+class _MedicineImageButtonState extends State<MedicineImageButton> {
+  File? _pikedImage;
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      radius: 40,
+      child: CupertinoButton(
+        padding: _pikedImage == null ? null : EdgeInsets.zero,
+        onPressed: _showBottomSheet,
+        child: _pikedImage == null
+            ? const Icon(
+                CupertinoIcons.photo_camera_solid,
+                size: 30,
+                color: Colors.white,
+              )
+            : CircleAvatar(
+                foregroundImage: FileImage(_pikedImage!),
+                radius: 40,
+              ),
+      ),
+    );
+  }
+
+  /// _showBottomSheet
+  void _showBottomSheet() {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return PickImageBottomSheet(
+            onPressdCamera: () => _onPressed(ImageSource.camera),
+            onPressdGallery: () => _onPressed(ImageSource.gallery),
+          );
+        });
+  }
+
+  void _onPressed(ImageSource source) {
+    ImagePicker().pickImage(source: source).then((xfile) {
+      if (xfile != null) {
+        setState(() {
+          _pikedImage = File(xfile.path);
+          Navigator.maybePop(context);
+        });
+      }
+    });
+  }
+}
+
+class PickImageBottomSheet extends StatelessWidget {
+  const PickImageBottomSheet({
+    super.key,
+    required this.onPressdCamera,
+    required this.onPressdGallery,
+  });
+
+  final VoidCallback onPressdCamera;
+  final VoidCallback onPressdGallery;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: pagePadding,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextButton(
+              onPressed: onPressdCamera,
+              child: const Text('카메라 촬영'),
+            ),
+            TextButton(
+              onPressed: onPressdGallery,
+              child: const Text('앨범에서 가져오기'),
+            )
+          ],
         ),
       ),
     );
