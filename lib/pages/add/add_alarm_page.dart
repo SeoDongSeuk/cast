@@ -1,14 +1,16 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:cast/components/cast_colors.dart';
 import 'package:cast/components/cast_constants.dart';
 import 'package:cast/components/cast_widget.dart';
 import 'package:cast/pages/add/components/add_page_widget.dart';
+import 'package:cast/services/add_medicine_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class AddAlarmPage extends StatefulWidget {
-  const AddAlarmPage({
+class AddAlarmPage extends StatelessWidget {
+  AddAlarmPage({
     super.key,
     this.medicineImage,
     required this.medicineName,
@@ -17,16 +19,7 @@ class AddAlarmPage extends StatefulWidget {
   final File? medicineImage;
   final String medicineName;
 
-  @override
-  State<AddAlarmPage> createState() => _AddAlarmPageState();
-}
-
-class _AddAlarmPageState extends State<AddAlarmPage> {
-  final _alarms = <String>{
-    '08:00',
-    '13:00',
-    '15:00',
-  };
+  final service = AddMedicineService();
 
   @override
   Widget build(BuildContext context) {
@@ -42,13 +35,17 @@ class _AddAlarmPageState extends State<AddAlarmPage> {
             height: largeSpace,
           ),
           Expanded(
-            child: ListView(
-              children: alarmWidget,
-              // children: const [
-              //   AlarmBox(),
-              //   AddAlarmButton(),
-              // ],
-            ),
+            child: AnimatedBuilder(
+                animation: service,
+                builder: (context, _) {
+                  return ListView(
+                    children: alarmWidget,
+                    // children: const [
+                    //   AlarmBox(),
+                    //   AddAlarmButton(),
+                    // ],
+                  );
+                }),
           )
         ],
       ),
@@ -63,25 +60,16 @@ class _AddAlarmPageState extends State<AddAlarmPage> {
   List<Widget> get alarmWidget {
     final children = <Widget>[];
     children.addAll(
-      _alarms
+      service.alarm
           .map((alarmTime) => AlarmBox(
-              time: alarmTime,
-              onPressdMinus: () {
-                setState(() {
-                  _alarms.remove(alarmTime);
-                });
-              }))
+                time: alarmTime,
+                service: service,
+              ))
           .toList(),
     );
     children.add(
       AddAlarmButton(
-        onPressed: () {
-          final now = DateTime.now();
-          final nowTime = DateFormat('HH:mm').format(now);
-          setState(() {
-            _alarms.add(nowTime);
-          });
-        },
+        service: service,
       ),
     );
     return children;
@@ -92,11 +80,11 @@ class AlarmBox extends StatelessWidget {
   const AlarmBox({
     super.key,
     required this.time,
-    required this.onPressdMinus,
+    required this.service,
   });
 
   final String time;
-  final VoidCallback onPressdMinus;
+  final AddMedicineService service;
   @override
   Widget build(BuildContext context) {
     final initTime = DateFormat('HH:mm').parse(time);
@@ -106,7 +94,9 @@ class AlarmBox extends StatelessWidget {
         Expanded(
           flex: 1,
           child: IconButton(
-            onPressed: onPressdMinus,
+            onPressed: () {
+              service.removeAlarm(time);
+            },
             icon: const Icon(CupertinoIcons.minus_circle),
           ),
         ),
@@ -197,10 +187,10 @@ class TimePickerBottomSheet extends StatelessWidget {
 class AddAlarmButton extends StatelessWidget {
   const AddAlarmButton({
     super.key,
-    required this.onPressed,
+    required this.service,
   });
 
-  final VoidCallback onPressed;
+  final AddMedicineService service;
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +201,7 @@ class AddAlarmButton extends StatelessWidget {
             vertical: 6,
           ),
           textStyle: Theme.of(context).textTheme.bodyMedium),
-      onPressed: onPressed,
+      onPressed: service.addNowAlarm,
       child: const Row(
         children: [
           Expanded(
