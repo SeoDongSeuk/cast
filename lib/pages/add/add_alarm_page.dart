@@ -7,6 +7,7 @@ import 'package:cast/services/add_medicine_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AddAlarmPage extends StatelessWidget {
   AddAlarmPage({
@@ -51,6 +52,24 @@ class AddAlarmPage extends StatelessWidget {
       bottomNavigationBar: BottomSubmitButton(
         onPressed: () {
           // 1. add alarm
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Row(
+                children: [
+                  Text('알람 권한이 없습니다.'),
+                  TextButton(
+                    // onPressed: () {
+                    //   openAppSettings();
+                    // },
+                    // 위에처럼 작성할수도 있고 밑에처럼 작성할수도 있다
+                    onPressed: openAppSettings,
+                    //설정창으로 이동하게 할수 있는 함수
+                    child: Text('설정창으로 이동'),
+                  )
+                ],
+              ),
+            ),
+          );
           // 2. save image (local dir)
           // 3. add medicine model (local DB, hive)
         },

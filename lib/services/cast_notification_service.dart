@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+// import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:intl/intl.dart';
 
 import 'package:timezone/data/latest.dart' as tz;
@@ -13,8 +13,8 @@ final notification = FlutterLocalNotificationsPlugin();
 class CastNotificationService {
   Future<void> initializeTimeZone() async {
     tz.initializeTimeZones();
-    final timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(timeZoneName));
+    //final timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+    //tz.setLocalLocation(tz.getLocation(timeZoneName));
   }
 
   Future<void> initializeNotification() async {
