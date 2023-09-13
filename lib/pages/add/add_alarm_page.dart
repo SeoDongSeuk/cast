@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:cast/components/cast_colors.dart';
 import 'package:cast/components/cast_constants.dart';
@@ -50,7 +49,11 @@ class AddAlarmPage extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BottomSubmitButton(
-        onPressed: () {},
+        onPressed: () {
+          // 1. add alarm
+          // 2. save image (local dir)
+          // 3. add medicine model (local DB, hive)
+        },
         text: '완료',
       ),
     );
