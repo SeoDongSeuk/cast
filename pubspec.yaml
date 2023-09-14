@@ -48,6 +48,8 @@ dependencies:
 
   # permission -> show setting
   permission_handler: ^11.0.0
+  
+  # file path 
   path_provider: ^2.1.1
 
 dev_dependencies:
